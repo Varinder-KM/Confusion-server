@@ -1,49 +1,79 @@
 const router = require('express');
 const bodyParser = require('body-parser');
+const Leader = require('../modules/leaders');
 
 const leaderRouter = router.Router();
 leaderRouter.use(bodyParser.json());
 
+
 leaderRouter.route('/')
-.all((req, res, next) =>{
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain')
-    next();
-})
 .get((req, res, next) =>{
-    res.end('this is a get Request Method for leaders');
+    Leader.find({})
+    .then((leaders) =>{
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(leaders);
+
+    }, (err) => next(err))
+    .catch((err) => next(err));
 })
 .post((req, res, next) =>{
-    res.write('will add the dish : '+ req.body.name + ' '+ req.body.description);
-    res.end('this is a post Request Method for leaders');
+    Leader.create(req.body)
+   .then((leader) =>{
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/json");
+    res.json(leader);
+
+   },(err) => next(err))
+   .catch((err) => next(err));
 })
 .put((req, res, next) =>{
     res.statusCode = 400;
-    res.end('Put Method is not supported in leaders');
+    res.end('put method is not applicable');
 })
 .delete((req, res, next) =>{
-    res.end('this method is used to delete all leaders');
+    Leader.remove({})
+    .then((response) =>{
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(response);
+    
+    },(err) => next(err))
+    .catch((err) => next(err));
 });
 
 
 leaderRouter.route('/:leaderId')
-.all((req, res, next) =>{
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain')
-    next();
-})
 .get((req, res, next) =>{
-    res.end('this is a get Request Method for dishId : '+ req.params.leaderId);
+    Leader.findById(req.params.leaderId)
+    .then((leader) =>{
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(leader);
+    })
+    .catch((err) => next(err));
 })
 .post((req, res, next) =>{
     res.statusCode=403;
-    res.end('Pot Method is not supportes Request Method');
+    res.end('Post method is not applicable');
 })
 .put((req, res, next) =>{
-    res.end('this is a PUT Request Method for dishId : '+ req.params.leaderId);
+    Leader.findByIdAndUpdate(req.params.promoId,{$set: req.body}, {new: true})
+   .then((leader) =>{
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(leader);
+    })
+    .catch((err) => next(err));
 })
 .delete((req, res, next) =>{
-    res.end('this method is used to delete dish whose id is ' + req.params.leaderId +' description');
+    Leader.findByIdAndRemove(req.params.leaderId)
+    .then((respon) =>{
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(respon);
+    })
+    .catch((err) => next(err));
 });
 
 module.exports = leaderRouter;

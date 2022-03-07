@@ -1,4 +1,3 @@
-const { stringify } = require('jade/lib/utils');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -14,8 +13,8 @@ const commentShema = new Schema({
         require: true
     },
     author: {
-        type: String,
-        require: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'User'
     }
 },{
     timestamps : true
